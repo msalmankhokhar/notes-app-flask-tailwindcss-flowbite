@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block css %}{% endblock css %}
+
+{% block main %}
+
+<div class="container mx-auto px-3 py-5 flex flex-col gap-5 md:px-10 sm:px-5">
+    <a href="/" type="button" class="max-w-fit flex gap-1 items-center justify-center focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900">
+        <i class="fas fa-angle-left"></i>
+        <span>Go Back</span>
+    </a>
+    <h1 class="text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-3xl lg:text-4xl dark:text-white">Search results for <span class="text-blue-600">{{searchInput}}</span></h1>
+    
+    <div id="notes-container" class="flex gap-2 flex-col">
+        {% for Note in notesList %}
+        <div id="Note_{{Note.serial_number}}" class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <a href="#">
+                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{Note.title}}</h5>
+            </a>
+            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{Note.desc}}</p>
+            <div class="flex gap-1">
+                <button type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800" onclick="readNote(event)">Read more</button>
+                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" onclick="editNote(event)" note_serial_number="{{Note.serial_number}}"><i class="fas fa-pen"></i></button>
+                <a href="/del_note/{{Note.serial_number}}" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" onclick="deleteNote(event)"><i class="fas fa-trash"></i></a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Edit note Modal -->
+    <div id="editNewNoteModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-2xl max-h-full">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
+                <!-- Modal header -->
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                        Write your Note
+                    </h3>
+                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="editNewNoteModal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="p-4 md:p-5 space-y-4">
+                    <form id="editNoteForm" action="/edit_note" method="post" class="flex flex-col gap-2 shadow rounded-md p-7">
+                        <input type="text" id="titleInputEdit" name="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Note title" required />
+                        <textarea id="descInputEdit" name="desc" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your thoughts here..." required></textarea>
+                        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Save</button>
+                    </form>
+                </div>
+                <!-- Modal footer -->
+                <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                    <button data-modal-hide="editNewNoteModal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Read more modal -->
+    <div id="readMoreModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-2xl max-h-full">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                <!-- Modal header -->
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                    <h3 id="readNoteTitle" class="text-xl font-semibold text-gray-900 dark:text-white">
+                        <!-- Note title here -->
+                    </h3>
+                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="readMoreModal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="p-4 md:p-5 space-y-4">
+                    <p id="readNoteDesc" class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                        <!-- Note desc here -->
+                    </p>
+                </div>
+                <!-- Modal footer -->
+                <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                    <!-- <button data-modal-hide="default-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">I accept</button> -->
+                    <button data-modal-hide="readMoreModal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock main %}
+
+{% block js %}
+<script>
+
+    const readMoreModalTarget = document.getElementById('readMoreModal');
+    const editNoteModalTarget = document.getElementById('editNewNoteModal');
+    const readNoteDesc = document.getElementById('readNoteDesc');
+    const readNoteTitle = document.getElementById('readNoteTitle');
+    const editNoteDesc = document.getElementById('descInputEdit');
+    const editNoteTitle = document.getElementById('titleInputEdit');
+    const editNoteForm = document.getElementById('editNoteForm');
+    const readMoreModal = new Modal(readMoreModalTarget);
+    const editNoteModal = new Modal(editNoteModalTarget);
+
+    function readNote(event){
+        // Someone clicked on the read more button in a Note
+        // Now we have to get the title and description of that note
+        const button = event.currentTarget;
+        const title = button.parentElement.previousElementSibling.previousElementSibling.innerText;
+        const desc = button.parentElement.previousElementSibling.innerText;
+        // now we have got the title and desc, now we have to pass into a function that will open up a pop up showing note text
+        showReadNotePopUp(title, desc);
+    }
+    function editNote(event){
+        // Someone clicked on the edit button in a Note
+        // Now we have to get the title and description of that note
+        const button = event.currentTarget;
+        const serial_number = button.getAttribute('note_serial_number');
+        const title = button.parentElement.previousElementSibling.previousElementSibling.innerText;
+        const desc = button.parentElement.previousElementSibling.innerText;
+        // now we have got the title and desc, now we have to pass into a function that will open up a pop up showing note text
+        showEditNotePopUp(serial_number, title, desc);
+    }
+
+    function showReadNotePopUp(title, desc){
+        readNoteTitle.innerText = title;
+        readNoteDesc.innerText = desc;
+        readMoreModal.show();
+    }
+    function showEditNotePopUp(serial_number, title, desc){
+        editNoteTitle.value = title;
+        editNoteDesc.innerText = desc;
+        editNoteForm.setAttribute('action', `/edit_note/${serial_number}`)
+        editNoteModal.show();
+    }
+
+    function deleteNote(event){
+        event.preventDefault();
+        const deleteLink = event.currentTarget.href;
+        const answer = window.confirm('Are you sure to delete this Note?');
+        console.log(answer)
+        if (answer == true) {
+            location.href = deleteLink;
+        }
+    }
+
+</script>
+{% endblock js %}
