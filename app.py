@@ -11,7 +11,8 @@ app.secret_key = 'ali_muthal_don'
 
 # Setting up databse connection
 sql_server_URI = f'mssql+pyodbc:///?odbc_connect={connection_URI}Encrypt=no'
-app.config["SQLALCHEMY_DATABASE_URI"] = sql_server_URI
+sqlite_URI = 'sqlite:///database.sqlite'
+app.config["SQLALCHEMY_DATABASE_URI"] = sqlite_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 database = SQLAlchemy(app)
 
