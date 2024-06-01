@@ -1,4 +1,14 @@
 {
+  "name": "remastered-flowbite",
+  "version": "1.0.0",
+  "description": "Notes App",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tailwindcss -i ./static/src/input.css -o ./static/dist/output.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
     "tailwindcss": "^3.4.3"
   },

@@ -1,8 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: 'selector',
+  darkMode: ['selector', '[data-mode="dark"]'],
   content: [
-    "./templates/**/*.html",
+    "./templates/*.html",
     "./static/src/**/*.js",
     "./node_modules/flowbite/**/*.js"
   ],

@@ -44,6 +44,16 @@ def getNotesList(email:str) -> list:
         notesList = [ { 'serial_number' : note.serial_number, 'title' : note.title, 'desc' : note.desc } for note in user_notes ]
         return notesList
 
+@app.route('/theme', methods=['GET'])
+def theme():
+    darkTheme = request.args.get('value')
+    if darkTheme == 'true':
+        session.update({ 'theme' : True })
+        return { 'theme' : True }
+    else:
+        session.pop('theme')
+        return { 'theme' : False }
+
 @app.route('/', methods = [ 'GET'])
 def index():
     if 'user' in session:
